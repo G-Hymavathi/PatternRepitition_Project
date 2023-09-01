@@ -1,0 +1,62 @@
+import tkinter as tk
+from tkinter import messagebox
+import random
+words = ["apple", "banana", "cherry", "grape", "lemon", "orange", "table","strawberry"]
+
+
+def new_game():
+    global current_word, attempts
+    current_word = random_word()
+    masked_word.set(mask_word(current_word))
+    attempts = 3
+    attempts_label.config(text=f"Attempts left: {attempts}")
+    word_label.config(fg="black")
+
+
+def random_word():
+    return random.choice(words)
+
+
+def mask_word(word):
+    return "".join([letter if random.random() > 0.5 else "_" for letter in word])
+
+
+def guess_word():
+    global attempts
+    guess = guess_entry.get().lower()
+
+    if guess == current_word:
+        messagebox.showinfo("Congratulations", "You guessed the word!")
+        new_game()
+    else:
+        attempts -= 1
+        attempts_label.config(text=f"Attempts left: {attempts}")
+        if attempts == 0:
+            result = f"Game Over! The word was: {current_word}"
+            messagebox.showinfo("Game Over", result)
+            new_game()
+            word_label.config(fg="red")  # Change text color to red on game over
+
+
+root = tk.Tk()
+root.title("Word Guessing Game")
+
+masked_word = tk.StringVar()
+word_label = tk.Label(root, textvariable=masked_word, font=("Arial", 24), fg="black")
+word_label.pack()
+
+guess_entry = tk.Entry(root)
+guess_entry.pack()
+guess_button = tk.Button(root, text="Guess", command=guess_word, bg="green", fg="white")
+guess_button.pack()
+
+attempts = 3
+attempts_label = tk.Label(root, text=f"Attempts left: {attempts}", fg="blue")
+attempts_label.pack()
+
+new_game_button = tk.Button(root, text="New Game", command=new_game, bg="orange", fg="white")
+new_game_button.pack()
+
+new_game()
+
+root.mainloop()
